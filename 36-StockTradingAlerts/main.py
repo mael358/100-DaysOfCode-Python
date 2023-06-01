@@ -1,6 +1,9 @@
+import os
+
 import requests
 import pandas
 import json
+from twilio.rest import Client
 
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
@@ -8,7 +11,8 @@ COMPANY_NAME = "Tesla Inc"
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
 
-STOCK_API_KEY = "WXVD41OYA13LTD3A"
+STOCK_API_KEY = ""
+NEWS_API_KEY = ""
 
 ## STEP 1: Use https://www.alphavantage.co/documentation/#daily
 # When stock price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
@@ -54,23 +58,39 @@ else:
     print(diff_percent)
 
     # If TODO4 percentage is greater than 5 then print("Get News").
-    if diff_percent > 5:
-        print("Get News")
+    if diff_percent > 0.1:
+        ## STEP 2: https://newsapi.org/
+        # Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
+        news_params = {
+            "apiKey": NEWS_API_KEY,
+            "q": COMPANY_NAME
+        }
+        news_response = requests.get(NEWS_ENDPOINT, params=news_params)
+        articles = news_response.json()["articles"]
 
-    ## STEP 2: https://newsapi.org/
-    # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
-    
-    # TODO 6. - Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
+        # Use Python slice operator to create a list that contains the first 3 articles.
+        # Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
+        three_articles = articles[:3]
+        print(three_articles)
 
-    # TODO 7. - Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
+        ## STEP 3: Use twilio.com/docs/sms/quickstart/python
+        # to send a separate message with each article's title and description to your phone number.
 
+        # Create a new list of the first 3 article's headline and description using list comprehension.
+        formatted_articles = [f"Headline: {article['title']} \nBrief: {article['description']}" for article in three_articles]
 
-## STEP 3: Use twilio.com/docs/sms/quickstart/python
-# to send a separate message with each article's title and description to your phone number.
+        # TODO 9. - Send each article as a separate message via Twilio.
+        # account_sid = os.environ['TWILIO_ACCOUNT_SID']
+        # auth_token = os.environ['TWILIO_AUTH_TOKEN']
+        client = Client(account_sid, auth_token)
 
-# TODO 8. - Create a new list of the first 3 article's headline and description using list comprehension.
+        for article in formatted_articles:
+            message = client.messages.create(
+                body=article,
+                from_='+13613264324',
+                to='+50233479094'
+            )
 
-# TODO 9. - Send each article as a separate message via Twilio.
 
 
 # Optional TODO: Format the message like this:
