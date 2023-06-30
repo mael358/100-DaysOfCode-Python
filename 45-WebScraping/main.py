@@ -1,11 +1,44 @@
 from bs4 import BeautifulSoup
-import lxml
+import requests
 
-with open("website.html") as file:
-    contents = file.read()
+# with open("website.html") as file:
+#     contents = file.read()
+#
+# soup = BeautifulSoup(contents, "lxml")
+# # print(soup.title)
+# # print(soup.title.string)
+#
+# # print(soup.prettify())
+#
+# all_anchor_tags = soup.find_all(name="a")
+# # print(all_anchor_tags)
+#
+# # for tag in all_anchor_tags:
+# #     print(tag.getText())
+# #     print(tag.get("href"))
+#
+# heading = soup.find(name="h1", id="name")
+# # print(heading)
+#
+# section_heading = soup.find(name="h3", class_="heading")
+# # print(section_heading.getText())
+#
+# company_url = soup.select_one(selector="p a")
+# print(company_url)
 
-soup = BeautifulSoup(contents, "lxml")
+
+
+response = requests.get("https://news.ycombinator.com/news")
+yc_web_page = response.text
+
+soup = BeautifulSoup(yc_web_page, "lxml")
 # print(soup.title)
-# print(soup.title.string)
 
-print(soup.prettify())
+# Get the titles
+title = soup.find(name="span", class_="titleline")
+article_text = title
+print(article_text)
+
+anchor_tags = soup.find(name="span", class_="score")
+print(anchor_tags)
+
