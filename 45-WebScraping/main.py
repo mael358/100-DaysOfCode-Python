@@ -28,17 +28,32 @@ import requests
 
 
 
-response = requests.get("https://news.ycombinator.com/news")
-yc_web_page = response.text
+# response = requests.get("https://news.ycombinator.com/news")
+# yc_web_page = response.text
+#
+# soup = BeautifulSoup(yc_web_page, "lxml")
+# # print(soup.title)
+#
+# # Get the titles
+# title = soup.find(name="span", class_="titleline")
+# article_text = title
+# print(article_text)
+#
+# anchor_tags = soup.find(name="span", class_="score")
+# print(anchor_tags)
 
-soup = BeautifulSoup(yc_web_page, "lxml")
-# print(soup.title)
+URL = "https://web.archive.org/web/20200518073855/https://www.empireonline.com/movies/features/best-movies-2/"
 
-# Get the titles
-title = soup.find(name="span", class_="titleline")
-article_text = title
-print(article_text)
+response = requests.get(URL)
+website_html = response.text
 
-anchor_tags = soup.find(name="span", class_="score")
-print(anchor_tags)
+soup = BeautifulSoup(website_html, "html.parser")
 
+all_movies = soup.find_all(name="h3", class_="title")
+movie_titles = [movie.getText() for movie in all_movies]
+movies = movie_titles[::-1]
+print(movies)
+
+with open("movies.txt", mode="w") as file:
+    for movie in movies:
+        file.write(f"{movie}\n")
